@@ -23,5 +23,6 @@ namespace TicketBookingService.Services
 
     public interface ITrainService
     {
+        Train Create(Train train);
     }
 }

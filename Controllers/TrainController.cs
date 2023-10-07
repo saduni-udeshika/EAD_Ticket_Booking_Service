@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TicketBookingService.Models;
+using TicketBookingService.Services;
 
 namespace TicketBookingService.Controllers
 {
@@ -20,11 +21,5 @@ namespace TicketBookingService.Controllers
             var createdTrain = _trainService.Create(train);
             return Ok(createdTrain);
         }
-
-        public interface ITrainService
-        {
-            Train Create(Train train);
-        }
-
     }
 }
