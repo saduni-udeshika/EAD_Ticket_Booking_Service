@@ -24,3 +24,7 @@ To build and run the application, follow these steps:
 
     ```shell
     dotnet run
+
+## swagger doc
+
+   http://localhost:5253/swagger/index.html

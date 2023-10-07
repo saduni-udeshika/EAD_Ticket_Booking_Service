@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using TicketBookingService.Models;
-using TicketBookingService.Services;
 
 namespace TicketBookingService.Controllers
 {
