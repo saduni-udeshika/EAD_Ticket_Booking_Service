@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using TicketBookingService.Models;
 
@@ -24,5 +23,6 @@ namespace TicketBookingService.Services
 
     public interface ITrainService
     {
+        Train Create(Train train);
     }
 }

@@ -21,11 +21,5 @@ namespace TicketBookingService.Controllers
             var createdTrain = _trainService.Create(train);
             return Ok(createdTrain);
         }
-
-        public interface ITrainService
-        {
-            Train Create(Train train);
-        }
-
     }
 }
