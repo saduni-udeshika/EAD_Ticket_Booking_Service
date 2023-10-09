@@ -8,6 +8,7 @@ builder.Services.AddControllers();
 // Register your services here
 builder.Services.AddScoped<ITrainService, TrainService>();
 builder.Services.AddScoped<ITravelerService, TravelerService>();
+builder.Services.AddScoped<ITravelagentService, TravelagentService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
