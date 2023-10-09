@@ -1,27 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\Documents\\Projects\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj": {}
+    "E:\\4 Year 2 Sem\\EAD\\Assignment\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\Documents\\Projects\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj": {
+    "E:\\4 Year 2 Sem\\EAD\\Assignment\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\Documents\\Projects\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj",
+        "projectUniqueName": "E:\\4 Year 2 Sem\\EAD\\Assignment\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj",
         "projectName": "TicketBookingService",
-        "projectPath": "C:\\Users\\User\\Documents\\Projects\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj",
+        "projectPath": "E:\\4 Year 2 Sem\\EAD\\Assignment\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\Documents\\Projects\\EAD_Ticket_Booking_Service\\obj\\",
+        "outputPath": "E:\\4 Year 2 Sem\\EAD\\Assignment\\EAD_Ticket_Booking_Service\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\sdk\\7.0.302\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -80,7 +79,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     }
