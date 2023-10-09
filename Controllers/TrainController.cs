@@ -21,5 +21,13 @@ namespace TicketBookingService.Controllers
             var createdTrain = _trainService.Create(train);
             return Ok(createdTrain);
         }
+
+        [HttpGet]
+        public IActionResult GetAllTrains()
+        {
+            var allTrains = _trainService.GetAllTrains();
+            return Ok(allTrains);
+        }
+
     }
 }

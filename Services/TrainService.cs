@@ -19,10 +19,16 @@ namespace TicketBookingService.Services
             _trainCollection.InsertOne(train);
             return train;
         }
+
+        public List<Train> GetAllTrains()
+        {
+            return _trainCollection.Find(_ => true).ToList();
+        }
     }
 
     public interface ITrainService
     {
         Train Create(Train train);
+        List<Train> GetAllTrains();
     }
 }
