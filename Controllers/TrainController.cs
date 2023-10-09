@@ -47,21 +47,33 @@ namespace TicketBookingService.Controllers
             return Ok(updatedTrain);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteTrain(string id)
+        [HttpDelete("cancel/{id}")]
+        public IActionResult CancelTrain(string id)
         {
-            if (!ObjectId.TryParse(id, out ObjectId objectId))
+            if (!ObjectId.TryParse(id, out ObjectId trainObjectId))
             {
-                return BadRequest("Invalid ObjectId format");
+                return BadRequest("Invalid train ObjectId format");
             }
 
-            var deletedTrain = _trainService.Delete(objectId);
-            if (deletedTrain == null)
+            // Check if there are any existing reservations for this train
+            // TODO: Uncomment line 59 and remove line 61 (hardcoded value)
+            // bool hasExistingReservations = _reservationService.HasExistingReservationsForTrain(trainObjectId);
+            bool hasExistingReservations = false;
+
+            if (hasExistingReservations)
+            {
+                return BadRequest("Cannot cancel a train with existing reservations.");
+            }
+
+            // Train cancellation
+            var canceledTrain = _trainService.Delete(trainObjectId);
+            if (canceledTrain == null)
             {
                 return NotFound();
             }
 
-            return Ok(deletedTrain);
+            return Ok("Train successfully canceled.");
         }
+
     }
 }
