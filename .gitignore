@@ -1,0 +1,16 @@
+*.suo
+*.user
+*.sln.docstates
+
+# User-specific Visual Studio directories
+.vscode/
+.vs/
+bin/
+obj/
+
+# .NET build directories
+bin/
+obj/
+
+# Tye-specific files
+.tye/
