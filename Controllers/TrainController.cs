@@ -10,10 +10,12 @@ namespace TicketBookingService.Controllers
     public class TrainController : ControllerBase
     {
         private readonly ITrainService _trainService;
+        private readonly IReservationService _reservationService;
 
-        public TrainController(ITrainService trainService)
+        public TrainController(ITrainService trainService, IReservationService reservationService)
         {
             _trainService = trainService;
+             _reservationService = reservationService;
         }
 
         [HttpPost]
@@ -56,9 +58,7 @@ namespace TicketBookingService.Controllers
             }
 
             // Check if there are any existing reservations for this train
-            // TODO: Uncomment line 59 and remove line 61 (hardcoded value)
-            // bool hasExistingReservations = _reservationService.HasExistingReservationsForTrain(trainObjectId);
-            bool hasExistingReservations = false;
+            bool hasExistingReservations = _reservationService.HasExistingReservationsForTrain(trainObjectId);
 
             if (hasExistingReservations)
             {
