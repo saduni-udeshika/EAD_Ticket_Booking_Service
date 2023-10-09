@@ -11,7 +11,7 @@ namespace TicketBookingService.Services
         public ReservationService(IConfiguration config)
         {
             var client = new MongoClient(config.GetConnectionString("TicketBookingApp"));
-            var database = client.GetDatabase("ReservationBookingDB");
+            var database = client.GetDatabase("TicketBookingDB");
             _reservationCollection = database.GetCollection<Reservation>("reservations");
         }
 

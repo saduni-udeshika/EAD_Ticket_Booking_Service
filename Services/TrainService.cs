@@ -11,7 +11,7 @@ namespace TicketBookingService.Services
         public TrainService(IConfiguration config)
         {
             var client = new MongoClient(config.GetConnectionString("TicketBookingApp"));
-            var database = client.GetDatabase("TrainBookingDB");
+            var database = client.GetDatabase("TicketBookingDB");
             _trainCollection = database.GetCollection<Train>("trains");
         }
 
