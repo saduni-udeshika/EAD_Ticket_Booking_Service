@@ -5,6 +5,7 @@ namespace TicketBookingService.Models
     {
         public ObjectId Id { get; set; }
         // Add a property to represent the association with a train
+        public ObjectId ReferenceId { get; set; }
         public ObjectId TrainId { get; set; }
         public DateTime ReservationDate { get; set; }
         public string? PassengerName { get; set; }
