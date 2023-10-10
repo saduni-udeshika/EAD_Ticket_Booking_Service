@@ -8,7 +8,6 @@ namespace TicketBookingService.Models
         public string? TrainNumber { get; set; }
         public string? Destination { get; set; }
         public bool IsActive { get; set; }
-        public bool IsPublished { get; set; }
     }
 
         public class Schedule

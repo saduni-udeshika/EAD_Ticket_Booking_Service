@@ -16,53 +16,26 @@ namespace TicketBookingService.Services
             _reservationCollection = database.GetCollection<Reservation>("reservations");
             _trainCollection = database.GetCollection<Train>("train");
         }
-/*
+
         public Reservation Create(Reservation reservation)
         {
-            _reservationCollection.InsertOne(reservation);
-            // After creating a reservation, update the associated train's IsActive and IsPublished
-            var associatedTrain = _trainCollection.Find(train => train.Id.ToString() == reservation.TrainId).FirstOrDefault();
-            if (associatedTrain != null)
+            // Check if the reservation date is within 30 days from the booking date
+            if ((reservation.ReservationDate - DateTime.Now).TotalDays > 30)
             {
-                associatedTrain.IsActive = true;
-                associatedTrain.IsPublished = true;
-                _trainCollection.ReplaceOne(train => train.Id == associatedTrain.Id, associatedTrain);
+                throw new ArgumentException("Reservation date must be within 30 days from the booking date.");
             }
+
+            // Check if there are already 4 reservations with the same reference ID
+            var existingReservations = _reservationCollection.Find(r => r.ReferenceId == reservation.ReferenceId).ToList();
+            if (existingReservations.Count >= 4)
+            {
+                throw new InvalidOperationException("Maximum 4 reservations allowed per reference ID.");
+            }
+
+            // Insert the reservation
+            _reservationCollection.InsertOne(reservation);
             return reservation;
         }
-*/
-
-public Reservation Create(Reservation reservation)
-{
-    // Check if the reservation date is within 30 days from the booking date
-    if ((reservation.ReservationDate - DateTime.Now).TotalDays > 30)
-    {
-        throw new ArgumentException("Reservation date must be within 30 days from the booking date.");
-    }
-
-    // Check if there are already 4 reservations with the same reference ID
-    var existingReservations = _reservationCollection.Find(r => r.ReferenceId == reservation.ReferenceId).ToList();
-    if (existingReservations.Count >= 4)
-    {
-        throw new InvalidOperationException("Maximum 4 reservations allowed per reference ID.");
-    }
-
-    // Insert the reservation
-    _reservationCollection.InsertOne(reservation);
-
-    // After creating a reservation, update the associated train's IsActive and IsPublished
-    var associatedTrain = _trainCollection.Find(train => train.Id.ToString() == reservation.TrainId).FirstOrDefault();
-    if (associatedTrain != null)
-    {
-        associatedTrain.IsActive = true;
-        associatedTrain.IsPublished = true;
-        _trainCollection.ReplaceOne(train => train.Id == associatedTrain.Id, associatedTrain);
-    }
-
-    return reservation;
-}
-
-
 
         public List<Reservation> GetAllReservations()
         {
@@ -78,7 +51,6 @@ public Reservation Create(Reservation reservation)
         {
             var filter = Builders<Reservation>.Filter.Eq(reservation => reservation.Id, id);
             var update = Builders<Reservation>.Update
-
                 .Set(reservation => reservation.PhoneNumber, updatedReservation.PhoneNumber)
                 .Set(reservation => reservation.ReservationDate, updatedReservation.ReservationDate)
                 .Set(reservation => reservation.Destination, updatedReservation.Destination)
@@ -97,15 +69,6 @@ public Reservation Create(Reservation reservation)
             var deletedReservation = _reservationCollection.FindOneAndDelete(reservation => reservation.Id == id);
             return deletedReservation;
         }
-
-        public bool HasExistingReservationsForTrain(string trainId)
-        {
-            var existingReservations = _reservationCollection
-                .Find(reservation => reservation.TrainId == trainId)
-                .ToList();
-
-            return existingReservations.Count > 0;
-        }
     }
 
     public interface IReservationService
@@ -115,7 +78,5 @@ public Reservation Create(Reservation reservation)
         Reservation GetReservationById(ObjectId id);
         Reservation Update(ObjectId id, Reservation updatedReservation);
         Reservation Delete(ObjectId id);
-
-        bool HasExistingReservationsForTrain(string trainId);
     }
 }
