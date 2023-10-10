@@ -10,10 +10,12 @@ namespace TicketBookingService.Controllers
     public class TrainController : ControllerBase
     {
         private readonly ITrainService _trainService;
+        private readonly IReservationService _reservationService;
 
-        public TrainController(ITrainService trainService)
+        public TrainController(ITrainService trainService, IReservationService reservationService)
         {
             _trainService = trainService;
+             _reservationService = reservationService;
         }
 
         [HttpPost]
@@ -47,21 +49,31 @@ namespace TicketBookingService.Controllers
             return Ok(updatedTrain);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteTrain(string id)
+        [HttpDelete("cancel/{id}")]
+        public IActionResult CancelTrain(string id)
         {
-            if (!ObjectId.TryParse(id, out ObjectId objectId))
+            if (!ObjectId.TryParse(id, out ObjectId trainObjectId))
             {
-                return BadRequest("Invalid ObjectId format");
+                return BadRequest("Invalid train ObjectId format");
             }
 
-            var deletedTrain = _trainService.Delete(objectId);
-            if (deletedTrain == null)
+            // Check if there are any existing reservations for this train
+            bool hasExistingReservations = _reservationService.HasExistingReservationsForTrain(trainObjectId);
+
+            if (hasExistingReservations)
+            {
+                return BadRequest("Cannot cancel a train with existing reservations.");
+            }
+
+            // Train cancellation
+            var canceledTrain = _trainService.Delete(trainObjectId);
+            if (canceledTrain == null)
             {
                 return NotFound();
             }
 
-            return Ok(deletedTrain);
+            return Ok("Train successfully canceled.");
         }
+
     }
 }
