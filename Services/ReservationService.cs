@@ -7,17 +7,27 @@ namespace TicketBookingService.Services
     public class ReservationService : IReservationService
     {
         private readonly IMongoCollection<Reservation> _reservationCollection;
+        private readonly IMongoCollection<Train> _trainCollection;
 
         public ReservationService(IConfiguration config)
         {
             var client = new MongoClient(config.GetConnectionString("TicketBookingApp"));
             var database = client.GetDatabase("TicketBookingDB");
             _reservationCollection = database.GetCollection<Reservation>("reservations");
+            _trainCollection = database.GetCollection<Train>("train");
         }
 
         public Reservation Create(Reservation reservation)
         {
             _reservationCollection.InsertOne(reservation);
+            // After creating a reservation, update the associated train's IsActive and IsPublished
+            var associatedTrain = _trainCollection.Find(train => train.Id.ToString() == reservation.TrainId).FirstOrDefault();
+            if (associatedTrain != null)
+            {
+                associatedTrain.IsActive = true;
+                associatedTrain.IsPublished = true;
+                _trainCollection.ReplaceOne(train => train.Id == associatedTrain.Id, associatedTrain);
+            }
             return reservation;
         }
 
@@ -35,9 +45,9 @@ namespace TicketBookingService.Services
         {
             var filter = Builders<Reservation>.Filter.Eq(reservation => reservation.Id, id);
             var update = Builders<Reservation>.Update
-                
+
                 .Set(reservation => reservation.PhoneNumber, updatedReservation.PhoneNumber)
-                .Set(reservation => reservation.ReservationDate , updatedReservation.ReservationDate )
+                .Set(reservation => reservation.ReservationDate, updatedReservation.ReservationDate)
                 .Set(reservation => reservation.Destination, updatedReservation.Destination)
                 .Set(reservation => reservation.Time, updatedReservation.Time);
 
@@ -55,7 +65,7 @@ namespace TicketBookingService.Services
             return deletedReservation;
         }
 
-        public bool HasExistingReservationsForTrain(ObjectId trainId)
+        public bool HasExistingReservationsForTrain(string trainId)
         {
             var existingReservations = _reservationCollection
                 .Find(reservation => reservation.TrainId == trainId)
@@ -73,6 +83,6 @@ namespace TicketBookingService.Services
         Reservation Update(ObjectId id, Reservation updatedReservation);
         Reservation Delete(ObjectId id);
 
-        bool HasExistingReservationsForTrain(ObjectId trainId);
+        bool HasExistingReservationsForTrain(string trainId);
     }
 }
