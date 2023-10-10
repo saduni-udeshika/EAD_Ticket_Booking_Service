@@ -11,7 +11,7 @@ namespace TicketBookingService.Services
         public ReservationService(IConfiguration config)
         {
             var client = new MongoClient(config.GetConnectionString("TicketBookingApp"));
-            var database = client.GetDatabase("ReservationBookingDB");
+            var database = client.GetDatabase("TicketBookingDB");
             _reservationCollection = database.GetCollection<Reservation>("reservations");
         }
 
@@ -54,6 +54,15 @@ namespace TicketBookingService.Services
             var deletedReservation = _reservationCollection.FindOneAndDelete(reservation => reservation.Id == id);
             return deletedReservation;
         }
+
+        public bool HasExistingReservationsForTrain(ObjectId trainId)
+        {
+            var existingReservations = _reservationCollection
+                .Find(reservation => reservation.TrainId == trainId)
+                .ToList();
+
+            return existingReservations.Count > 0;
+        }
     }
 
     public interface IReservationService
@@ -63,5 +72,7 @@ namespace TicketBookingService.Services
         Reservation GetReservationById(ObjectId id);
         Reservation Update(ObjectId id, Reservation updatedReservation);
         Reservation Delete(ObjectId id);
+
+        bool HasExistingReservationsForTrain(ObjectId trainId);
     }
 }
