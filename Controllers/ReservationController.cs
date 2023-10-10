@@ -17,7 +17,7 @@ namespace TicketBookingService.Controllers
             _reservationService = reservationService;
             _trainService = trainService;
         }
-
+/*
         [HttpPost]
         public IActionResult CreateReservation(Reservation reservation)
         {
@@ -25,8 +25,40 @@ namespace TicketBookingService.Controllers
             // Assuming you want to return the updated train information
             var updatedTrain = _trainService.GetTrainById(new ObjectId(reservation.TrainId));
 
-            return Ok(updatedTrain);
+            return Ok(createdReservation);
         }
+*/
+
+[HttpPost]
+public IActionResult CreateReservation(Reservation reservation)
+{
+    try
+    {
+        // Validate and create the reservation
+        var createdReservation = _reservationService.Create(reservation);
+        
+        // Assuming you want to return the updated train information
+        var updatedTrain = _trainService.GetTrainById(new ObjectId(reservation.TrainId));
+
+        return Ok(createdReservation);
+    }
+    catch (ArgumentException ex)
+    {
+        // Handle reservation date validation error
+        return BadRequest(ex.Message);
+    }
+    catch (InvalidOperationException ex)
+    {
+        // Handle maximum reservation limit validation error
+        return BadRequest(ex.Message);
+    }
+    catch (Exception ex)
+    {
+        // Handle other exceptions
+        return StatusCode(500, "An error occurred while processing your request.");
+    }
+}
+
 
         [HttpGet]
         public IActionResult GetAllReservations()
