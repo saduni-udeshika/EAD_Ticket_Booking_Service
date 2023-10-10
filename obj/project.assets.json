@@ -1767,25 +1767,26 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\sadun\\.nuget\\packages\\": {}
+    "C:\\Users\\User\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\4th-year\\semester-2\\EAD\\assignment\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj",
+      "projectUniqueName": "C:\\Users\\User\\Documents\\Projects\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj",
       "projectName": "TicketBookingService",
-      "projectPath": "F:\\4th-year\\semester-2\\EAD\\assignment\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj",
-      "packagesPath": "C:\\Users\\sadun\\.nuget\\packages\\",
-      "outputPath": "F:\\4th-year\\semester-2\\EAD\\assignment\\EAD_Ticket_Booking_Service\\obj\\",
+      "projectPath": "C:\\Users\\User\\Documents\\Projects\\EAD_Ticket_Booking_Service\\TicketBookingService.csproj",
+      "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\User\\Documents\\Projects\\EAD_Ticket_Booking_Service\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\sadun\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "C:\\Program Files\\dotnet\\sdk\\7.0.302\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1844,7 +1845,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
       }
     }
   }
