@@ -58,7 +58,8 @@ namespace TicketBookingService.Controllers
             }
 
             // Check if there are any existing reservations for this train
-            bool hasExistingReservations = _reservationService.HasExistingReservationsForTrain(trainObjectId);
+            bool hasExistingReservations = _reservationService.HasExistingReservationsForTrain(trainObjectId.ToString());
+
 
             if (hasExistingReservations)
             {

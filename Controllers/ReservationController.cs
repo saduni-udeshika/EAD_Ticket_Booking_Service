@@ -10,17 +10,22 @@ namespace TicketBookingService.Controllers
     public class ReservationController : ControllerBase
     {
         private readonly IReservationService _reservationService;
+        private readonly ITrainService _trainService;
 
-        public ReservationController(IReservationService reservationService)
+        public ReservationController(IReservationService reservationService, ITrainService trainService)
         {
             _reservationService = reservationService;
+            _trainService = trainService;
         }
 
         [HttpPost]
         public IActionResult CreateReservation(Reservation reservation)
         {
             var createdReservation = _reservationService.Create(reservation);
-            return Ok(createdReservation);
+            // Assuming you want to return the updated train information
+            var updatedTrain = _trainService.GetTrainById(new ObjectId(reservation.TrainId));
+
+            return Ok(updatedTrain);
         }
 
         [HttpGet]
