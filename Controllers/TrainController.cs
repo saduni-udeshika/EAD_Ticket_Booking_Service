@@ -49,7 +49,7 @@ namespace TicketBookingService.Controllers
             return Ok(updatedTrain);
         }
 
-        [HttpDelete("cancel/{id}")]
+        [HttpDelete("{id}")]
         public IActionResult CancelTrain(string id)
         {
             if (!ObjectId.TryParse(id, out ObjectId trainObjectId))
