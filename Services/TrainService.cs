@@ -21,9 +21,14 @@ namespace TicketBookingService.Services
             return train;
         }
 
-        public List<Train> GetAllTrains()
+        public List<Train> GetActiveTrains()
         {
-            return _trainCollection.Find(_ => true).ToList();
+            return _trainCollection.Find(train => train.IsActive == true).ToList();
+        }
+
+        public List<Train> GetInactiveTrains()
+        {
+            return _trainCollection.Find(train => train.IsActive == false).ToList();
         }
 
         public Train GetTrainById(ObjectId id)
@@ -37,8 +42,7 @@ namespace TicketBookingService.Services
             var update = Builders<Train>.Update
                 .Set(train => train.TrainName, updatedTrain.TrainName)
                 .Set(train => train.TrainNumber, updatedTrain.TrainNumber)
-                .Set(train => train.IsActive, updatedTrain.IsActive)
-                .Set(train => train.IsPublished, updatedTrain.IsPublished);
+                .Set(train => train.IsActive, updatedTrain.IsActive);
 
             var options = new FindOneAndUpdateOptions<Train>
             {
@@ -58,7 +62,8 @@ namespace TicketBookingService.Services
     public interface ITrainService
     {
         Train Create(Train train);
-        List<Train> GetAllTrains();
+        List<Train> GetActiveTrains();
+        List<Train> GetInactiveTrains();
         Train GetTrainById(ObjectId id);
         Train Update(ObjectId id, Train updatedTrain);
         Train Delete(ObjectId id);

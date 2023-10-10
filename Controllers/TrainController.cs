@@ -15,7 +15,7 @@ namespace TicketBookingService.Controllers
         public TrainController(ITrainService trainService, IReservationService reservationService)
         {
             _trainService = trainService;
-             _reservationService = reservationService;
+            _reservationService = reservationService;
         }
 
         [HttpPost]
@@ -26,11 +26,24 @@ namespace TicketBookingService.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllTrains()
+        public IActionResult GetAllTrains([FromQuery] bool isActive = true)
         {
-            var allTrains = _trainService.GetAllTrains();
-            return Ok(allTrains);
+            List<Train> trains;
+
+            if (isActive)
+            {
+                // Retrieve active trains
+                trains = _trainService.GetActiveTrains();
+            }
+            else
+            {
+                // Retrieve inactive trains
+                trains = _trainService.GetInactiveTrains();
+            }
+
+            return Ok(trains);
         }
+
 
         [HttpPut("{id}")]
         public IActionResult UpdateTrain(string id, Train train)
@@ -55,15 +68,6 @@ namespace TicketBookingService.Controllers
             if (!ObjectId.TryParse(id, out ObjectId trainObjectId))
             {
                 return BadRequest("Invalid train ObjectId format");
-            }
-
-            // Check if there are any existing reservations for this train
-            bool hasExistingReservations = _reservationService.HasExistingReservationsForTrain(trainObjectId.ToString());
-
-
-            if (hasExistingReservations)
-            {
-                return BadRequest("Cannot cancel a train with existing reservations.");
             }
 
             // Train cancellation
