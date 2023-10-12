@@ -80,23 +80,34 @@ namespace TicketBookingService.Controllers
             }
             return Ok(updatedReservation);
             }
-
-
-        [HttpDelete("{id}")]
-        public IActionResult DeleteReservation(string id)
-        {
-            if (!ObjectId.TryParse(id, out ObjectId objectId))
+            
+            
+            [HttpDelete("{id}")]
+            public IActionResult DeleteReservation(string id)
             {
-                return BadRequest("Invalid ObjectId format");
+                if (!ObjectId.TryParse(id, out ObjectId objectId))
+                {
+                    return BadRequest("Invalid ObjectId format");
+                }
+                var reservation = _reservationService.GetReservationById(objectId); // Assuming you have a method to retrieve a reservation by its ID.
+                if (reservation == null)
+                {
+                    return NotFound("Reservation not found");
+                }
+                
+                // Calculate the time difference between the reservation date and the current date.
+                TimeSpan timeDifference = reservation.ReservationDate - DateTime.UtcNow;
+                if (timeDifference.TotalDays < 5)
+                {
+                    return BadRequest("Reservations can only be canceled at least 5 days before the reservation date.");
+                }
+                
+                var deletedReservation = _reservationService.Delete(objectId);
+                if (deletedReservation == null)
+                {
+                    return NotFound();
+                }
+                return Ok(deletedReservation);
             }
-
-            var deletedReservation = _reservationService.Delete(objectId);
-            if (deletedReservation == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(deletedReservation);
-        }
     }
 }

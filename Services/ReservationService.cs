@@ -66,14 +66,13 @@ namespace TicketBookingService.Services
                 };
                 return _reservationCollection.FindOneAndUpdate(filter, update, options);
                }
-
-
-        public Reservation Delete(ObjectId id)
-        {
-            var deletedReservation = _reservationCollection.FindOneAndDelete(reservation => reservation.Id == id);
-            return deletedReservation;
+               
+               public Reservation Delete(ObjectId id)
+               {
+                var deletedReservation = _reservationCollection.FindOneAndDelete(reservation => reservation.Id == id);
+                return deletedReservation;
+                }
         }
-    }
 
     public interface IReservationService
     {
