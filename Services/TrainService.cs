@@ -31,6 +31,11 @@ namespace TicketBookingService.Services
             return _trainCollection.Find(train => train.IsActive == false).ToList();
         }
 
+        public List<Train> GetAllTrains()
+        {
+            return _trainCollection.Find(Builders<Train>.Filter.Empty).ToList();
+        }
+
         public Train GetTrainById(ObjectId id)
         {
             return _trainCollection.Find(train => train.Id == id).FirstOrDefault();
@@ -64,6 +69,7 @@ namespace TicketBookingService.Services
         Train Create(Train train);
         List<Train> GetActiveTrains();
         List<Train> GetInactiveTrains();
+        List<Train> GetAllTrains();
         Train GetTrainById(ObjectId id);
         Train Update(ObjectId id, Train updatedTrain);
         Train Delete(ObjectId id);
