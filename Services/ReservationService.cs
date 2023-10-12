@@ -47,22 +47,26 @@ namespace TicketBookingService.Services
             return _reservationCollection.Find(reservation => reservation.Id == id).FirstOrDefault();
         }
 
+      
+
         public Reservation Update(ObjectId id, Reservation updatedReservation)
         {
-            var filter = Builders<Reservation>.Filter.Eq(reservation => reservation.Id, id);
-            var update = Builders<Reservation>.Update
+            var filter = Builders<Reservation>.Filter.And(
+                Builders<Reservation>.Filter.Eq(reservation => reservation.Id, id),
+                Builders<Reservation>.Filter.Gte(reservation => reservation.ReservationDate, DateTime.UtcNow.AddDays(5))
+                );
+                var update = Builders<Reservation>.Update
                 .Set(reservation => reservation.PhoneNumber, updatedReservation.PhoneNumber)
                 .Set(reservation => reservation.ReservationDate, updatedReservation.ReservationDate)
                 .Set(reservation => reservation.Destination, updatedReservation.Destination)
                 .Set(reservation => reservation.Time, updatedReservation.Time);
+                var options = new FindOneAndUpdateOptions<Reservation>
+                {
+                    ReturnDocument = ReturnDocument.After
+                };
+                return _reservationCollection.FindOneAndUpdate(filter, update, options);
+               }
 
-            var options = new FindOneAndUpdateOptions<Reservation>
-            {
-                ReturnDocument = ReturnDocument.After
-            };
-
-            return _reservationCollection.FindOneAndUpdate(filter, update, options);
-        }
 
         public Reservation Delete(ObjectId id)
         {

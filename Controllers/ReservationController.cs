@@ -53,22 +53,34 @@ namespace TicketBookingService.Controllers
             return Ok(allReservations);
         }
 
+   
+           
         [HttpPut("{id}")]
         public IActionResult UpdateReservation(string id, Reservation reservation)
         {
             if (!ObjectId.TryParse(id, out ObjectId objectId))
             {
-                return BadRequest("Invalid ObjectId format");
+              return BadRequest("Invalid ObjectId format");
             }
-
+            var existingReservation = _reservationService.GetReservationById(objectId);
+            if (existingReservation == null)
+            {
+                return BadRequest("existingReservation");
+            }
+            // Calculate the minimum allowed reservation date (5 days from now).
+            var minAllowedReservationDate = DateTime.UtcNow.AddDays(5);
+            if (reservation.ReservationDate < minAllowedReservationDate)
+            {
+                return BadRequest("Reservation date must be at least 5 days in the future.");
+            }
             var updatedReservation = _reservationService.Update(objectId, reservation);
             if (updatedReservation == null)
             {
-                return NotFound();
+                return BadRequest("updateReservation");
+            }
+            return Ok(updatedReservation);
             }
 
-            return Ok(updatedReservation);
-        }
 
         [HttpDelete("{id}")]
         public IActionResult DeleteReservation(string id)
