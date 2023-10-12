@@ -26,23 +26,15 @@ namespace TicketBookingService.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllTrains([FromQuery] bool isActive = true)
+        public IActionResult GetAllTrains([FromQuery] bool? isActive)
         {
-            List<Train> trains;
-
-            if (isActive)
-            {
-                // Retrieve active trains
-                trains = _trainService.GetActiveTrains();
-            }
-            else
-            {
-                // Retrieve inactive trains
-                trains = _trainService.GetInactiveTrains();
-            }
+            List<Train> trains = isActive.HasValue
+                ? (isActive.Value ? _trainService.GetActiveTrains() : _trainService.GetInactiveTrains())
+                : _trainService.GetAllTrains();
 
             return Ok(trains);
         }
+
 
 
         [HttpPut("{id}")]
