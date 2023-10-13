@@ -1,3 +1,4 @@
+
 using MongoDB.Bson;
 namespace TicketBookingService.Models
 {
@@ -8,6 +9,7 @@ namespace TicketBookingService.Models
         public string? TrainNumber { get; set; }
         public string? Destination { get; set; }
         public bool IsActive { get; set; }
+        public Schedule? TrainSchedule { get; set; }
     }
 
         public class Schedule
@@ -16,4 +18,4 @@ namespace TicketBookingService.Models
         public DateTime ArrivalTime { get; set; }
     }
 
-}
+}  
