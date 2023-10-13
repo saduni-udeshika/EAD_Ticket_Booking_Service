@@ -1,4 +1,5 @@
-using MongoDB.Bson;
+using System;
+using System.Collections.Generic;
 using MongoDB.Driver;
 using TicketBookingService.Models;
 
@@ -23,25 +24,25 @@ namespace TicketBookingService.Services
 
         public List<Train> GetActiveTrains()
         {
-            return _trainCollection.Find(train => train.IsActive == true).ToList();
+            return _trainCollection.Find(train => train.IsActive).ToList();
         }
 
         public List<Train> GetInactiveTrains()
         {
-            return _trainCollection.Find(train => train.IsActive == false).ToList();
+            return _trainCollection.Find(train => !train.IsActive).ToList();
         }
 
         public List<Train> GetAllTrains()
         {
-            return _trainCollection.Find(Builders<Train>.Filter.Empty).ToList();
+            return _trainCollection.Find(_ => true).ToList();
         }
 
-        public Train GetTrainById(ObjectId id)
+        public Train GetTrainById(string id)
         {
             return _trainCollection.Find(train => train.Id == id).FirstOrDefault();
         }
 
-        public Train Update(ObjectId id, Train updatedTrain)
+        public Train Update(string id, Train updatedTrain)
         {
             var filter = Builders<Train>.Filter.Eq(train => train.Id, id);
             var update = Builders<Train>.Update
@@ -57,7 +58,21 @@ namespace TicketBookingService.Services
             return _trainCollection.FindOneAndUpdate(filter, update, options);
         }
 
-        public Train Delete(ObjectId id)
+        public Train UpdateTrainStatus(string id, Train updateisActive)
+        {
+            var filter = Builders<Train>.Filter.Eq(train => train.Id, id);
+            var update = Builders<Train>.Update.Set(train => train.IsActive, updateisActive.IsActive);
+
+            var options = new FindOneAndUpdateOptions<Train>
+            {
+                ReturnDocument = ReturnDocument.After
+            };
+
+            return _trainCollection.FindOneAndUpdate(filter, update, options);
+        }
+
+
+        public Train Delete(string id)
         {
             var deletedTrain = _trainCollection.FindOneAndDelete(train => train.Id == id);
             return deletedTrain;
@@ -70,8 +85,9 @@ namespace TicketBookingService.Services
         List<Train> GetActiveTrains();
         List<Train> GetInactiveTrains();
         List<Train> GetAllTrains();
-        Train GetTrainById(ObjectId id);
-        Train Update(ObjectId id, Train updatedTrain);
-        Train Delete(ObjectId id);
+        Train GetTrainById(string id);
+        Train Update(string id, Train updatedTrain);
+        Train UpdateTrainStatus(string id, Train updateisActive);
+        Train Delete(string id);
     }
 }
