@@ -53,38 +53,61 @@ namespace TicketBookingService.Controllers
             return Ok(allReservations);
         }
 
+   
+           
         [HttpPut("{id}")]
         public IActionResult UpdateReservation(string id, Reservation reservation)
         {
             if (!ObjectId.TryParse(id, out ObjectId objectId))
             {
-                return BadRequest("Invalid ObjectId format");
+              return BadRequest("Invalid ObjectId format");
             }
-
+            var existingReservation = _reservationService.GetReservationById(objectId);
+            if (existingReservation == null)
+            {
+                return BadRequest("existingReservation");
+            }
+            // Calculate the minimum allowed reservation date (5 days from now).
+            var minAllowedReservationDate = DateTime.UtcNow.AddDays(5);
+            if (reservation.ReservationDate < minAllowedReservationDate)
+            {
+                return BadRequest("Reservation date must be at least 5 days in the future.");
+            }
             var updatedReservation = _reservationService.Update(objectId, reservation);
             if (updatedReservation == null)
             {
-                return NotFound();
+                return BadRequest("updateReservation");
             }
-
             return Ok(updatedReservation);
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult DeleteReservation(string id)
-        {
-            if (!ObjectId.TryParse(id, out ObjectId objectId))
-            {
-                return BadRequest("Invalid ObjectId format");
             }
-
-            var deletedReservation = _reservationService.Delete(objectId);
-            if (deletedReservation == null)
+            
+            
+            [HttpDelete("{id}")]
+            public IActionResult DeleteReservation(string id)
             {
-                return NotFound();
+                if (!ObjectId.TryParse(id, out ObjectId objectId))
+                {
+                    return BadRequest("Invalid ObjectId format");
+                }
+                var reservation = _reservationService.GetReservationById(objectId); // Assuming you have a method to retrieve a reservation by its ID.
+                if (reservation == null)
+                {
+                    return NotFound("Reservation not found");
+                }
+                
+                // Calculate the time difference between the reservation date and the current date.
+                TimeSpan timeDifference = reservation.ReservationDate - DateTime.UtcNow;
+                if (timeDifference.TotalDays < 5)
+                {
+                    return BadRequest("Reservations can only be canceled at least 5 days before the reservation date.");
+                }
+                
+                var deletedReservation = _reservationService.Delete(objectId);
+                if (deletedReservation == null)
+                {
+                    return NotFound();
+                }
+                return Ok(deletedReservation);
             }
-
-            return Ok(deletedReservation);
-        }
     }
 }
