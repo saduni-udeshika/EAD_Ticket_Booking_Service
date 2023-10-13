@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using TicketBookingService.Models;
 using TicketBookingService.Services;
 
@@ -21,6 +20,7 @@ namespace TicketBookingService.Controllers
         [HttpPost]
         public IActionResult CreateTrain(Train train)
         {
+            train.Id = Guid.NewGuid().ToString("N");
             var createdTrain = _trainService.Create(train);
             return Ok(createdTrain);
         }
@@ -35,17 +35,28 @@ namespace TicketBookingService.Controllers
             return Ok(trains);
         }
 
-
-
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         public IActionResult UpdateTrain(string id, Train train)
         {
-            if (!ObjectId.TryParse(id, out ObjectId objectId))
+            var updatedTrain = _trainService.Update(id, train);
+            if (updatedTrain == null)
             {
-                return BadRequest("Invalid ObjectId format");
+                return NotFound();
             }
 
-            var updatedTrain = _trainService.Update(objectId, train);
+            return Ok(updatedTrain);
+        }
+
+        [HttpPut("{id}/status")]
+        public IActionResult UpdateTrainStatus(string id, Train train)
+        {
+            if (!Guid.TryParse(id, out Guid guid))
+            {
+                return BadRequest("Invalid Guid format");
+            }
+
+            var trainId = id.ToString();
+            var updatedTrain = _trainService.UpdateTrainStatus(trainId, train);
             if (updatedTrain == null)
             {
                 return NotFound();
@@ -57,13 +68,7 @@ namespace TicketBookingService.Controllers
         [HttpDelete("{id}")]
         public IActionResult CancelTrain(string id)
         {
-            if (!ObjectId.TryParse(id, out ObjectId trainObjectId))
-            {
-                return BadRequest("Invalid train ObjectId format");
-            }
-
-            // Train cancellation
-            var canceledTrain = _trainService.Delete(trainObjectId);
+            var canceledTrain = _trainService.Delete(id);
             if (canceledTrain == null)
             {
                 return NotFound();
@@ -71,6 +76,5 @@ namespace TicketBookingService.Controllers
 
             return Ok("Train successfully canceled.");
         }
-
     }
 }
