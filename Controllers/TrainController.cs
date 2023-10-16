@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using TicketBookingService.Models;
 using TicketBookingService.Services;
 
@@ -48,7 +49,7 @@ namespace TicketBookingService.Controllers
         }
 
         [HttpPut("{id}/status")]
-        public IActionResult UpdateTrainStatus(string id, Train train)
+        public IActionResult UpdateTrainStatus(string id, [FromBody] UpdateTrainStatusRequest request)
         {
             if (!Guid.TryParse(id, out Guid guid))
             {
@@ -56,7 +57,7 @@ namespace TicketBookingService.Controllers
             }
 
             var trainId = id.ToString();
-            var updatedTrain = _trainService.UpdateTrainStatus(trainId, train);
+            var updatedTrain = _trainService.UpdateTrainStatus(trainId, request);
             if (updatedTrain == null)
             {
                 return NotFound();
@@ -77,4 +78,10 @@ namespace TicketBookingService.Controllers
             return Ok("Train successfully canceled.");
         }
     }
+
+    public class UpdateTrainStatusRequest
+    {
+        public bool IsActive { get; set; }
+    }
+
 }
