@@ -18,12 +18,14 @@ namespace TicketBookingService.Controllers
             _trainService = trainService;
         }
 
-        [HttpPost]
+    
+
+  [HttpPost]
         public IActionResult CreateReservation(Reservation reservation)
         {
             try
             {
-                // Validate and create the reservation
+                // Call the service to create the reservation
                 var createdReservation = _reservationService.Create(reservation);
 
                 return Ok(createdReservation);
@@ -45,7 +47,6 @@ namespace TicketBookingService.Controllers
             }
         }
 
-
         [HttpGet]
         public IActionResult GetAllReservations()
         {
@@ -54,60 +55,96 @@ namespace TicketBookingService.Controllers
         }
 
    
-           
-        [HttpPut("{id}")]
+        
+        [HttpGet("{id}")]
+        public IActionResult GetReservation(string id)
+        {
+            if (!ObjectId.TryParse(id, out ObjectId objectId))
+            {
+                return BadRequest("Invalid ObjectId format");
+            }
+
+            var reservation = _reservationService.GetReservationById(objectId);
+
+            if (reservation == null)
+            {
+                return NotFound("Reservation not found");
+            }
+
+            return Ok(reservation);
+        }
+
+     
+
+     [HttpPut("{id}")]
         public IActionResult UpdateReservation(string id, Reservation reservation)
         {
             if (!ObjectId.TryParse(id, out ObjectId objectId))
             {
-              return BadRequest("Invalid ObjectId format");
+                return BadRequest("Invalid ObjectId format");
             }
-            var existingReservation = _reservationService.GetReservationById(objectId);
-            if (existingReservation == null)
+
+            try
             {
-                return BadRequest("existingReservation");
-            }
-            // Calculate the minimum allowed reservation date (5 days from now).
-            var minAllowedReservationDate = DateTime.UtcNow.AddDays(5);
-            if (reservation.ReservationDate < minAllowedReservationDate)
-            {
-                return BadRequest("Reservation date must be at least 5 days in the future.");
-            }
-            var updatedReservation = _reservationService.Update(objectId, reservation);
-            if (updatedReservation == null)
-            {
-                return BadRequest("updateReservation");
-            }
-            return Ok(updatedReservation);
-            }
-            
-            
-            [HttpDelete("{id}")]
-            public IActionResult DeleteReservation(string id)
-            {
-                if (!ObjectId.TryParse(id, out ObjectId objectId))
-                {
-                    return BadRequest("Invalid ObjectId format");
-                }
-                var reservation = _reservationService.GetReservationById(objectId); // Assuming you have a method to retrieve a reservation by its ID.
-                if (reservation == null)
+                // Call the service to update the reservation
+                var updatedReservation = _reservationService.Update(objectId, reservation);
+
+                if (updatedReservation == null)
                 {
                     return NotFound("Reservation not found");
                 }
-                
-                // Calculate the time difference between the reservation date and the current date.
-                TimeSpan timeDifference = reservation.ReservationDate - DateTime.UtcNow;
-                if (timeDifference.TotalDays < 5)
-                {
-                    return BadRequest("Reservations can only be canceled at least 5 days before the reservation date.");
-                }
-                
-                var deletedReservation = _reservationService.Delete(objectId);
-                if (deletedReservation == null)
-                {
-                    return NotFound();
-                }
-                return Ok(deletedReservation);
+
+                return Ok(updatedReservation);
             }
+            catch (ArgumentException ex)
+            {
+                // Handle reservation date validation error
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Handle maximum reservation limit validation error
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
+        }
+
+        
+           [HttpDelete("{id}")]
+        public IActionResult DeleteReservation(string id)
+        {
+            if (!ObjectId.TryParse(id, out ObjectId objectId))
+            {
+                return BadRequest("Invalid ObjectId format");
+            }
+
+            try
+            {
+                // Call the service to cancel the reservation
+                var canceledReservation = _reservationService.Cancel(objectId);
+
+                if (canceledReservation == null)
+                {
+                    return NotFound("Reservation not found");
+                }
+
+                return Ok(canceledReservation);
+            }
+            catch (ArgumentException ex)
+            {
+                // Handle reservation date validation error
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
+        }
+
     }
 }

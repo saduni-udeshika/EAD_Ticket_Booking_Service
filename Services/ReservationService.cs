@@ -17,10 +17,21 @@ namespace TicketBookingService.Services
             _trainCollection = database.GetCollection<Train>("train");
         }
 
-        public Reservation Create(Reservation reservation)
+    
+        
+     public Reservation Create(Reservation reservation)
         {
+            // Parse ReservationDate as a DateTime
+            if (!DateTime.TryParse(reservation.ReservationDate, out var reservationDate))
+            {
+                throw new ArgumentException("Invalid date format.");
+            }
+
+            // Calculate the difference between the reservation date and the current date
+            var dateDifference = reservationDate.Date - DateTime.Now.Date;
+
             // Check if the reservation date is within 30 days from the booking date
-            if ((reservation.ReservationDate - DateTime.Now).TotalDays > 30)
+            if (dateDifference.Days > 30)
             {
                 throw new ArgumentException("Reservation date must be within 30 days from the booking date.");
             }
@@ -37,42 +48,83 @@ namespace TicketBookingService.Services
             return reservation;
         }
 
-        public List<Reservation> GetAllReservations()
+     public List<Reservation> GetAllReservations()
         {
             return _reservationCollection.Find(_ => true).ToList();
         }
 
-        public Reservation GetReservationById(ObjectId id)
+     public Reservation GetReservationById(ObjectId id)
         {
             return _reservationCollection.Find(reservation => reservation.Id == id).FirstOrDefault();
         }
 
-      
 
-        public Reservation Update(ObjectId id, Reservation updatedReservation)
+    public Reservation Update(ObjectId id, Reservation updatedReservation)
+    {
+    var existingReservation = _reservationCollection.Find(reservation => reservation.Id == id).FirstOrDefault();
+
+    if (existingReservation == null)
+    {
+        return null; // Reservation not found
+    }
+
+    // Convert the existing reservation's ReservationDate to DateTime
+    if (!DateTime.TryParse(existingReservation.ReservationDate, out var existingReservationDate))
+    {
+        throw new ArgumentException("Invalid date format.");
+    }
+
+    // Check if the existing reservation can be updated (at least 5 days before the reservation date)
+    var minAllowedReservationDate = DateTime.UtcNow.AddDays(5);
+    if (existingReservationDate < minAllowedReservationDate)
+    {
+        throw new ArgumentException("Reservation can only be updated at least 5 days before the reservation date.");
+    }
+
+    // Update the reservation properties
+    existingReservation.PhoneNumber = updatedReservation.PhoneNumber;
+    existingReservation.ReservationDate = updatedReservation.ReservationDate;
+    existingReservation.Destination = updatedReservation.Destination;
+    existingReservation.Time = updatedReservation.Time;
+
+    // Save the updated reservation
+    _reservationCollection.ReplaceOne(reservation => reservation.Id == id, existingReservation);
+
+    return existingReservation;
+}
+
+   public Reservation Cancel(ObjectId id)
         {
-            var filter = Builders<Reservation>.Filter.And(
-                Builders<Reservation>.Filter.Eq(reservation => reservation.Id, id),
-                Builders<Reservation>.Filter.Gte(reservation => reservation.ReservationDate, DateTime.UtcNow.AddDays(5))
-                );
-                var update = Builders<Reservation>.Update
-                .Set(reservation => reservation.PhoneNumber, updatedReservation.PhoneNumber)
-                .Set(reservation => reservation.ReservationDate, updatedReservation.ReservationDate)
-                .Set(reservation => reservation.Destination, updatedReservation.Destination)
-                .Set(reservation => reservation.Time, updatedReservation.Time);
-                var options = new FindOneAndUpdateOptions<Reservation>
-                {
-                    ReturnDocument = ReturnDocument.After
-                };
-                return _reservationCollection.FindOneAndUpdate(filter, update, options);
-               }
-               
-               public Reservation Delete(ObjectId id)
-               {
-                var deletedReservation = _reservationCollection.FindOneAndDelete(reservation => reservation.Id == id);
-                return deletedReservation;
-                }
+            var existingReservation = _reservationCollection.Find(reservation => reservation.Id == id).FirstOrDefault();
+
+            if (existingReservation == null)
+            {
+                return null; // Reservation not found
+            }
+
+            // Convert the existing reservation's ReservationDate to DateTime
+            if (!DateTime.TryParse(existingReservation.ReservationDate, out var existingReservationDate))
+            {
+                throw new ArgumentException("Invalid date format.");
+            }
+
+            // Calculate the time difference between the reservation date and the current date
+            TimeSpan timeDifference = existingReservationDate - DateTime.UtcNow;
+
+            // Check if the reservation can be canceled (at least 5 days before the reservation date)
+            if (timeDifference.TotalDays < 5)
+            {
+                throw new ArgumentException("Reservations can only be canceled at least 5 days before the reservation date.");
+            }
+
+            // Remove the reservation from the database
+            _reservationCollection.DeleteOne(reservation => reservation.Id == id);
+
+            return existingReservation;
         }
+      
+    
+ } 
 
     public interface IReservationService
     {
@@ -80,6 +132,6 @@ namespace TicketBookingService.Services
         List<Reservation> GetAllReservations();
         Reservation GetReservationById(ObjectId id);
         Reservation Update(ObjectId id, Reservation updatedReservation);
-        Reservation Delete(ObjectId id);
+        Reservation Cancel(ObjectId id);
     }
 }
