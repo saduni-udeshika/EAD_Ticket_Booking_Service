@@ -66,6 +66,42 @@ namespace TicketBookingService.Controllers
             return Ok(updatedTrain);
         }
 
+        [HttpPut("{id}/arrivalTime")]
+        public IActionResult UpdateArrivalTime(string id, [FromBody] UpdateArrivalTimeRequest request)
+        {
+            if (!Guid.TryParse(id, out Guid guid))
+            {
+                return BadRequest("Invalid Guid format");
+            }
+
+            var trainId = id.ToString();
+            var updatedTrain = _trainService.UpdateArrivalTime(trainId, request);
+            if (updatedTrain == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedTrain);
+        }
+
+        [HttpPut("{id}/departureTime")]
+        public IActionResult UpdateDepartureTime(string id, [FromBody] UpdateDepartureTimeRequest request)
+        {
+            if (!Guid.TryParse(id, out Guid guid))
+            {
+                return BadRequest("Invalid Guid format");
+            }
+
+            var trainId = id.ToString();
+            var updatedTrain = _trainService.UpdateDepartureTime(trainId, request);
+            if (updatedTrain == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedTrain);
+        }
+
         [HttpDelete("{id}")]
         public IActionResult CancelTrain(string id)
         {
@@ -78,10 +114,19 @@ namespace TicketBookingService.Controllers
             return Ok("Train successfully canceled.");
         }
     }
-
     public class UpdateTrainStatusRequest
     {
         public bool IsActive { get; set; }
+    }
+
+    public class UpdateArrivalTimeRequest
+    {
+        public DateTime ArrivalTime { get; set; }
+    }
+
+        public class UpdateDepartureTimeRequest
+    {
+        public DateTime DepartureTime { get; set; }
     }
 
 }

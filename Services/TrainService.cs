@@ -71,6 +71,34 @@ namespace TicketBookingService.Services
             return updatedTrain;
         }
 
+        public Train UpdateArrivalTime(string id, UpdateArrivalTimeRequest request)
+        {
+            var filter = Builders<Train>.Filter.Eq(train => train.Id, id);
+            var update = Builders<Train>.Update.Set(train => train.TrainSchedule.ArrivalTime, request.ArrivalTime);
+
+            var options = new FindOneAndUpdateOptions<Train>
+            {
+                ReturnDocument = ReturnDocument.After
+            };
+
+            var updatedTrain = _trainCollection.FindOneAndUpdate(filter, update, options);
+            return updatedTrain;
+        }
+
+        public Train UpdateDepartureTime(string id, UpdateDepartureTimeRequest request)
+        {
+            var filter = Builders<Train>.Filter.Eq(train => train.Id, id);
+            var update = Builders<Train>.Update.Set(train => train.TrainSchedule.DepartureTime, request.DepartureTime);
+
+            var options = new FindOneAndUpdateOptions<Train>
+            {
+                ReturnDocument = ReturnDocument.After
+            };
+
+            var updatedTrain = _trainCollection.FindOneAndUpdate(filter, update, options);
+            return updatedTrain;
+        }
+
         public Train Delete(string id)
         {
             var deletedTrain = _trainCollection.FindOneAndDelete(train => train.Id == id);
@@ -88,5 +116,7 @@ namespace TicketBookingService.Services
         Train Update(string id, Train updatedTrain);
         Train Delete(string id);
         Train UpdateTrainStatus(string id, UpdateTrainStatusRequest request);
+        Train UpdateArrivalTime(string id, UpdateArrivalTimeRequest request);
+        Train UpdateDepartureTime(string id, UpdateDepartureTimeRequest request);
     }
 }
