@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using TicketBookingService.Models;
 using TicketBookingService.Services;
 
@@ -48,7 +49,7 @@ namespace TicketBookingService.Controllers
         }
 
         [HttpPut("{id}/status")]
-        public IActionResult UpdateTrainStatus(string id, Train train)
+        public IActionResult UpdateTrainStatus(string id, [FromBody] UpdateTrainStatusRequest request)
         {
             if (!Guid.TryParse(id, out Guid guid))
             {
@@ -56,7 +57,43 @@ namespace TicketBookingService.Controllers
             }
 
             var trainId = id.ToString();
-            var updatedTrain = _trainService.UpdateTrainStatus(trainId, train);
+            var updatedTrain = _trainService.UpdateTrainStatus(trainId, request);
+            if (updatedTrain == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedTrain);
+        }
+
+        [HttpPut("{id}/arrivalTime")]
+        public IActionResult UpdateArrivalTime(string id, [FromBody] UpdateArrivalTimeRequest request)
+        {
+            if (!Guid.TryParse(id, out Guid guid))
+            {
+                return BadRequest("Invalid Guid format");
+            }
+
+            var trainId = id.ToString();
+            var updatedTrain = _trainService.UpdateArrivalTime(trainId, request);
+            if (updatedTrain == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedTrain);
+        }
+
+        [HttpPut("{id}/departureTime")]
+        public IActionResult UpdateDepartureTime(string id, [FromBody] UpdateDepartureTimeRequest request)
+        {
+            if (!Guid.TryParse(id, out Guid guid))
+            {
+                return BadRequest("Invalid Guid format");
+            }
+
+            var trainId = id.ToString();
+            var updatedTrain = _trainService.UpdateDepartureTime(trainId, request);
             if (updatedTrain == null)
             {
                 return NotFound();
@@ -77,4 +114,19 @@ namespace TicketBookingService.Controllers
             return Ok("Train successfully canceled.");
         }
     }
+    public class UpdateTrainStatusRequest
+    {
+        public bool IsActive { get; set; }
+    }
+
+    public class UpdateArrivalTimeRequest
+    {
+        public DateTime ArrivalTime { get; set; }
+    }
+
+        public class UpdateDepartureTimeRequest
+    {
+        public DateTime DepartureTime { get; set; }
+    }
+
 }

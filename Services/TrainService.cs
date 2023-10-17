@@ -1,6 +1,5 @@
-using System;
-using System.Collections.Generic;
 using MongoDB.Driver;
+using TicketBookingService.Controllers;
 using TicketBookingService.Models;
 
 namespace TicketBookingService.Services
@@ -58,19 +57,47 @@ namespace TicketBookingService.Services
             return _trainCollection.FindOneAndUpdate(filter, update, options);
         }
 
-        public Train UpdateTrainStatus(string id, Train updateisActive)
+        public Train UpdateTrainStatus(string id, UpdateTrainStatusRequest request)
         {
             var filter = Builders<Train>.Filter.Eq(train => train.Id, id);
-            var update = Builders<Train>.Update.Set(train => train.IsActive, updateisActive.IsActive);
+            var update = Builders<Train>.Update.Set(train => train.IsActive, request.IsActive);
 
             var options = new FindOneAndUpdateOptions<Train>
             {
                 ReturnDocument = ReturnDocument.After
             };
 
-            return _trainCollection.FindOneAndUpdate(filter, update, options);
+            var updatedTrain = _trainCollection.FindOneAndUpdate(filter, update, options);
+            return updatedTrain;
         }
 
+        public Train UpdateArrivalTime(string id, UpdateArrivalTimeRequest request)
+        {
+            var filter = Builders<Train>.Filter.Eq(train => train.Id, id);
+            var update = Builders<Train>.Update.Set(train => train.TrainSchedule.ArrivalTime, request.ArrivalTime);
+
+            var options = new FindOneAndUpdateOptions<Train>
+            {
+                ReturnDocument = ReturnDocument.After
+            };
+
+            var updatedTrain = _trainCollection.FindOneAndUpdate(filter, update, options);
+            return updatedTrain;
+        }
+
+        public Train UpdateDepartureTime(string id, UpdateDepartureTimeRequest request)
+        {
+            var filter = Builders<Train>.Filter.Eq(train => train.Id, id);
+            var update = Builders<Train>.Update.Set(train => train.TrainSchedule.DepartureTime, request.DepartureTime);
+
+            var options = new FindOneAndUpdateOptions<Train>
+            {
+                ReturnDocument = ReturnDocument.After
+            };
+
+            var updatedTrain = _trainCollection.FindOneAndUpdate(filter, update, options);
+            return updatedTrain;
+        }
 
         public Train Delete(string id)
         {
@@ -87,7 +114,9 @@ namespace TicketBookingService.Services
         List<Train> GetAllTrains();
         Train GetTrainById(string id);
         Train Update(string id, Train updatedTrain);
-        Train UpdateTrainStatus(string id, Train updateisActive);
         Train Delete(string id);
+        Train UpdateTrainStatus(string id, UpdateTrainStatusRequest request);
+        Train UpdateArrivalTime(string id, UpdateArrivalTimeRequest request);
+        Train UpdateDepartureTime(string id, UpdateDepartureTimeRequest request);
     }
 }
